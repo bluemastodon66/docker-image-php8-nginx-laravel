@@ -1,12 +1,28 @@
 FROM php:8.0.11-fpm-alpine3.14
 # PHP extensions
 
+
+RUN apk add --update --no-cache mysql-client msmtp perl wget procps shadow libzip libpng libjpeg-turbo libwebp freetype icu
+
+
 RUN set -ex \
-    && apk add --update --no-cache nginx autoconf g++ make libpng-dev curl icu-dev \
-    && pecl install redis \
+
+
+    && apk add --update --no-cache --virtual build-essentials  zlib-dev libzip-dev nginx autoconf g++ make libpng-dev curl icu-dev libwebp-dev libjpeg-turbo-dev freetype-dev \
+    && docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp \
+    && pecl install redis \	
     && docker-php-ext-enable redis \
-    && docker-php-ext-configure gd \		
-	&& docker-php-ext-install -j$(nproc) gd opcache pdo_mysql  sockets fileinfo
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-install -j$(nproc) mysqli \
+    && docker-php-ext-install -j$(nproc) pdo_mysql \
+    && docker-php-ext-install -j$(nproc) intl \
+    && docker-php-ext-install -j$(nproc) opcache \
+    && docker-php-ext-install -j$(nproc) exif \
+    && docker-php-ext-install -j$(nproc) zip \
+    && docker-php-ext-install -j$(nproc) fileinfo \
+    && docker-php-ext-install -j$(nproc) sockets
+
+
 RUN { \
         echo 'opcache.memory_consumption=128'; \
         echo 'opcache.interned_strings_buffer=8'; \
