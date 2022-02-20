@@ -6,8 +6,6 @@ RUN apk add --update --no-cache mysql-client msmtp perl wget procps shadow libzi
 
 
 RUN set -ex \
-
-
     && apk add --update --no-cache --virtual build-essentials  zlib-dev libzip-dev nginx autoconf g++ make libpng-dev curl icu-dev libwebp-dev libjpeg-turbo-dev freetype-dev \
     && docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp \
     && pecl install redis \	
@@ -22,6 +20,7 @@ RUN set -ex \
     && docker-php-ext-install -j$(nproc) fileinfo \
     && docker-php-ext-install -j$(nproc) sockets
 
+RUN apk add --update --no-cache nodejs npm yarn
 
 RUN { \
         echo 'opcache.memory_consumption=128'; \
